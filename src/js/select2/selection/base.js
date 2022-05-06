@@ -15,7 +15,7 @@ define([
   BaseSelection.prototype.render = function () {
     var $selection = $(
       '<span class="select2-selection" ' +
-      ' aria-haspopup="true" aria-expanded="false">' +
+      ' role="combobox" aria-haspopup="listbox" aria-expanded="false">' +
       '</span>'
     );
 
@@ -60,10 +60,6 @@ define([
       }
     });
 
-    container.on('results:focus', function (params) {
-      self.$selection.attr('aria-activedescendant', params.data._resultId);
-    });
-
     container.on('selection:update', function (params) {
       self.update(params.data);
     });
@@ -79,7 +75,6 @@ define([
     container.on('close', function () {
       // When the dropdown is closed, aria-expanded="false"
       self.$selection.attr('aria-expanded', 'false');
-      self.$selection.removeAttr('aria-activedescendant');
       self.$selection.removeAttr('aria-owns');
 
       // This needs to be delayed as the active element is the body when the
