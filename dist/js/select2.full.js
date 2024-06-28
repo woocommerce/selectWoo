@@ -1386,8 +1386,13 @@ S2.define('select2/selection/base',[
     var id = container.id + '-container';
     var resultsId = container.id + '-results';
     var searchHidden = this.options.get('minimumResultsForSearch') === Infinity;
+    var isRequired = this.options.get('required') === true;
 
     this.container = container;
+
+    if (isRequired) {
+      this.$selection.attr('aria-required', 'true')
+    }
 
     this.$selection.on('focus', function (evt) {
       self.trigger('focus', evt);
@@ -1544,6 +1549,11 @@ S2.define('select2/selection/single',[
     var self = this;
 
     SingleSelection.__super__.bind.apply(this, arguments);
+
+    var isRequired = this.options.get('required') === true;
+    if (isRequired) {
+      this.$selection.find('.select2-selection__rendered').attr('aria-required', 'true')
+    }
 
     var id = container.id + '-container';
 
@@ -4405,7 +4415,6 @@ S2.define('select2/dropdown/attachBody',[
 
     var parentOffset = $offsetParent.offset();
 
-    css.top -= parentOffset.top;
     css.left -= parentOffset.left;
 
     if (!isCurrentlyAbove && !isCurrentlyBelow) {
@@ -4420,7 +4429,7 @@ S2.define('select2/dropdown/attachBody',[
 
     if (newDirection == 'above' ||
       (isCurrentlyAbove && newDirection !== 'below')) {
-      css.top = container.top - parentOffset.top - dropdown.height;
+      css.top = container.top - dropdown.height;
     }
 
     if (newDirection != null) {
@@ -5062,6 +5071,10 @@ S2.define('select2/options',[
 
     if (this.options.disabled == null) {
       this.options.disabled = $e.prop('disabled');
+    }
+
+    if (!this.options.required) {
+      this.options.required = $e.prop('required');
     }
 
     if (this.options.language == null) {

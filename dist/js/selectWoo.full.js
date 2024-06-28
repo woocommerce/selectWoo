@@ -1,5 +1,5 @@
 /*!
- * SelectWoo 1.0.10
+ * SelectWoo 1.0.11
  * https://github.com/woocommerce/selectWoo
  *
  * Released under the MIT license
@@ -1386,8 +1386,13 @@ S2.define('select2/selection/base',[
     var id = container.id + '-container';
     var resultsId = container.id + '-results';
     var searchHidden = this.options.get('minimumResultsForSearch') === Infinity;
+    var isRequired = this.options.get('required') === true;
 
     this.container = container;
+
+    if (isRequired) {
+      this.$selection.attr('aria-required', 'true')
+    }
 
     this.$selection.on('focus', function (evt) {
       self.trigger('focus', evt);
@@ -1544,6 +1549,11 @@ S2.define('select2/selection/single',[
     var self = this;
 
     SingleSelection.__super__.bind.apply(this, arguments);
+
+    var isRequired = this.options.get('required') === true;
+    if (isRequired) {
+      this.$selection.find('.select2-selection__rendered').attr('aria-required', 'true')
+    }
 
     var id = container.id + '-container';
 
@@ -5063,6 +5073,10 @@ S2.define('select2/options',[
       this.options.disabled = $e.prop('disabled');
     }
 
+    if (!this.options.required) {
+      this.options.required = $e.prop('required');
+    }
+
     if (this.options.language == null) {
       if ($e.prop('lang')) {
         this.options.language = $e.prop('lang').toLowerCase();
@@ -6531,6 +6545,14 @@ S2.define('jquery.select2',[
           var instanceOptions = $.extend(true, {}, options);
 
           var instance = new Select2($(this), instanceOptions);
+          if ( options.hasOwnProperty( 'required' ) && options.required === true ) {
+            if ( instance.$selection ) {
+              // adding `aria-required` to both of these elements,
+              // to improve screen reader support in Chrome/Firefox on Android.
+              instance.$selection.attr( 'aria-required', 'true' );
+              instance.$selection.find('span').first().attr( 'aria-required', 'true' );
+            }
+          }
         });
 
         return this;

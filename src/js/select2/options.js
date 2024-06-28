@@ -34,6 +34,10 @@ define([
       this.options.disabled = $e.prop('disabled');
     }
 
+    if (!this.options.required) {
+      this.options.required = $e.prop('required');
+    }
+
     if (this.options.language == null) {
       if ($e.prop('lang')) {
         this.options.language = $e.prop('lang').toLowerCase();

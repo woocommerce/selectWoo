@@ -1,0 +1,24 @@
+<head>
+    <title>Single select with search</title>
+
+    <link href="../select2.min.css" type="text/css" rel="stylesheet" />
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../selectWoo.full.js"></script>
+</head>
+
+<body>
+<h2>Required attribute</h2>
+
+<select name="not_required" id="not_required" class="country_to_state country_select "><option value="">Select a country&hellip; (optional)</option><option value="AX" >&#197;land Islands</option><option value="AF" >Afghanistan</option><option value="AL" >Albania</option><option value="DZ" >Algeria</option><option value="AS" >American Samoa</option><option value="AD" >Andorra</option><option value="AO" >Angola</option><option value="AI" >Anguilla</option><option value="AQ" >Antarctica</option><option value="EH" >Western Sahara</option><option value="YE" >Yemen</option><option value="ZM" >Zambia</option><option value="ZW" >Zimbabwe</option></select>
+<select name="required_attribute" id="required_attribute" class="country_to_state country_select " required><option value="">Select a country&hellip; (required)</option><option value="AX" >&#197;land Islands</option><option value="AF" >Afghanistan</option><option value="AL" >Albania</option><option value="DZ" >Algeria</option><option value="AS" >American Samoa</option><option value="AD" >Andorra</option><option value="AO" >Angola</option><option value="AI" >Anguilla</option><option value="AQ" >Antarctica</option><option value="EH" >Western Sahara</option><option value="YE" >Yemen</option><option value="ZM" >Zambia</option><option value="ZW" >Zimbabwe</option></select>
+<select name="required_option" id="required_option" class="country_to_state country_select "><option value="">Select a country&hellip; (required)</option><option value="AX" >&#197;land Islands</option><option value="AF" >Afghanistan</option><option value="AL" >Albania</option><option value="DZ" >Algeria</option><option value="AS" >American Samoa</option><option value="AD" >Andorra</option><option value="AO" >Angola</option><option value="AI" >Anguilla</option><option value="AQ" >Antarctica</option><option value="EH" >Western Sahara</option><option value="YE" >Yemen</option><option value="ZM" >Zambia</option><option value="ZW" >Zimbabwe</option></select>
+
+<script>
+    $( '#not_required' ).select2();
+    $( '#required_attribute' ).select2();
+    $( '#required_option' ).select2({
+        required: true,
+    });
+</script>
+</body>

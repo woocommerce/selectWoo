@@ -30,6 +30,11 @@ define([
 
     SingleSelection.__super__.bind.apply(this, arguments);
 
+    var isRequired = this.options.get('required') === true;
+    if (isRequired) {
+      this.$selection.find('.select2-selection__rendered').attr('aria-required', 'true')
+    }
+
     var id = container.id + '-container';
 
     this.$selection.find('.select2-selection__rendered')
