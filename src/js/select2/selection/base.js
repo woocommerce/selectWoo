@@ -41,8 +41,13 @@ define([
     var id = container.id + '-container';
     var resultsId = container.id + '-results';
     var searchHidden = this.options.get('minimumResultsForSearch') === Infinity;
+    var isRequired = this.options.get('required') === true;
 
     this.container = container;
+
+    if (isRequired) {
+      this.$selection.attr('aria-required', 'true')
+    }
 
     this.$selection.on('focus', function (evt) {
       self.trigger('focus', evt);
