@@ -126,7 +126,7 @@ define([
         formatted = Utils.entityDecode(formatted.trim());
       }
 
-      $selection.text(formatted);
+      $selection.append(formatted);
       $selection.prepend(removeItemTag);
       $selection.prop('title', selection.title || selection.text);
 

@@ -116,7 +116,7 @@ define([
     var $rendered = this.$selection.find('.select2-selection__rendered');
     var formatted = Utils.entityDecode(this.display(selection, $rendered));
 
-    $rendered.empty().text(formatted);
+    $rendered.empty().append(formatted);
     $rendered.prop('title', selection.title || selection.text);
   };
 
