@@ -19,6 +19,11 @@ define([
     this.$searchContainer = $search;
     this.$search = $search.find('input');
 
+    var label = this.options.get( 'label' );
+    if ( typeof( label ) === 'string' ) {
+      this.$search.attr( 'aria-label', label );
+    }
+
     var $rendered = decorated.call(this);
 
     this._transferTabIndex();

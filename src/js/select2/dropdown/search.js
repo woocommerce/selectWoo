@@ -18,6 +18,11 @@ define([
     this.$searchContainer = $search;
     this.$search = $search.find('input');
 
+    var label = this.options.get( 'label' );
+    if ( typeof( label ) === 'string' ) {
+      this.$search.attr( 'aria-label', label );
+    }
+
     $rendered.prepend($search);
 
     return $rendered;
