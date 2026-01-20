@@ -4985,7 +4985,7 @@ S2.define('select2/defaults',[
       var term = stripDiacritics(params.term).toUpperCase();
 
       // Check if the text contains the term
-      if (original.indexOf(term) > -1) {
+      if ( original.indexOf(term) == 0 ) {
         return data;
       }
 
