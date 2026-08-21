@@ -58,6 +58,10 @@ define([
     });
 
     this.$selection.on('keydown', function (evt) {
+      if (Utils.isRemoveChoiceEvent(evt)) {
+        return;
+      }
+
       self.trigger('keypress', evt);
 
       if (evt.which === KEYS.SPACE) {

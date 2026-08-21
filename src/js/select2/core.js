@@ -325,6 +325,10 @@ define([
     });
 
     $(document).on('keydown', function (evt) {
+      if (Utils.isRemoveChoiceEvent(evt)) {
+        return;
+      }
+
       var key = evt.which;
       if (self.isOpen()) {
         if (key === KEYS.ESC || (key === KEYS.UP && evt.altKey)) {

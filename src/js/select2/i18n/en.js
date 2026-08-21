@@ -37,6 +37,9 @@ define(function () {
     noResults: function () {
       return 'No results found';
     },
+    removeItem: function (item) {
+      return 'Remove ' + item.text;
+    },
     searching: function () {
       return 'Searching…';
     }

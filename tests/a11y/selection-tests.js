@@ -152,3 +152,67 @@ test('aria-labelledby should match the rendered container', function (assert) {
 });
 
 module('Accessibility - Multiple');
+
+test('remove controls are accessible buttons', function (assert) {
+  var $select = $('#qunit-fixture .multiple');
+
+  var selection = new MultipleSelection($select, options);
+  var $selection = selection.render();
+
+  selection.update([{
+    id: 'af',
+    text: 'Afghanistan'
+  }]);
+
+  var $remove = $selection.find('.select2-selection__choice__remove');
+
+  assert.equal(
+    $remove.prop('tagName'),
+    'SPAN',
+    'The element type is unchanged'
+  );
+  assert.equal(
+    $remove.attr('role'),
+    'button',
+    'The control has button semantics'
+  );
+  assert.equal($remove.attr('tabindex'), '0', 'The control is tabbable');
+  assert.equal(
+    $remove.attr('aria-label'),
+    'Remove Afghanistan',
+    'The control is labelled with the item text'
+  );
+  assert.ok(
+    $remove.attr('aria-hidden') == null,
+    'The control is exposed to assistive technology'
+  );
+});
+
+test('translated remove labels support special characters', function (assert) {
+  var translationOptions = new Options({
+    language: {
+      removeItem: function (item) {
+        return 'Delete ' + item.text;
+      }
+    }
+  });
+
+  var selection = new MultipleSelection(
+    $('#qunit-fixture .multiple'),
+    translationOptions
+  );
+  var $selection = selection.render();
+
+  selection.update([{
+    id: 'special',
+    text: 'A <place> & "region"'
+  }]);
+
+  var $remove = $selection.find('.select2-selection__choice__remove');
+
+  assert.equal(
+    $remove.attr('aria-label'),
+    'Delete A <place> & "region"',
+    'The translated label safely preserves the item text'
+  );
+});

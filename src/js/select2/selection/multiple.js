@@ -1,8 +1,9 @@
 define([
   'jquery',
   './base',
-  '../utils'
-], function ($, BaseSelection, Utils) {
+  '../utils',
+  '../keys'
+], function ($, BaseSelection, Utils, KEYS) {
   function MultipleSelection ($element, options) {
     MultipleSelection.__super__.constructor.apply(this, arguments);
   }
@@ -27,6 +28,10 @@ define([
     MultipleSelection.__super__.bind.apply(this, arguments);
 
     this.$selection.on('click', function (evt) {
+      if (Utils.isRemoveChoiceEvent(evt)) {
+        return;
+      }
+
       self.trigger('toggle', {
         originalEvent: evt
       });
@@ -53,7 +58,65 @@ define([
       }
     );
 
+    this.$selection.on(
+      'keydown',
+      '.select2-selection__choice__remove',
+      function (evt) {
+        if (self.options.get('disabled')) {
+          return;
+        }
+
+        var $remove = $(this);
+
+        if (evt.which === KEYS.ENTER) {
+          evt.preventDefault();
+
+          self._removeChoiceFromKeyboard($remove);
+        } else if (evt.which === KEYS.SPACE) {
+          evt.preventDefault();
+
+          $remove.data('select2-space-pressed', true);
+        }
+      }
+    );
+
+    this.$selection.on(
+      'keyup',
+      '.select2-selection__choice__remove',
+      function (evt) {
+        var $remove = $(this);
+
+        if (
+          evt.which !== KEYS.SPACE ||
+          !$remove.data('select2-space-pressed')
+        ) {
+          return;
+        }
+
+        evt.preventDefault();
+        $remove.removeData('select2-space-pressed');
+
+        if (self.options.get('disabled')) {
+          return;
+        }
+
+        self._removeChoiceFromKeyboard($remove);
+      }
+    );
+
+    this.$selection.on(
+      'focusout',
+      '.select2-selection__choice__remove',
+      function () {
+        $(this).removeData('select2-space-pressed');
+      }
+    );
+
     this.$selection.on('keydown', function (evt) {
+      if (Utils.isRemoveChoiceEvent(evt)) {
+        return;
+      }
+
       // If user starts typing an alphanumeric key on the keyboard, open if not opened.
       if (!container.isOpen() && evt.which >= 48 && evt.which <= 90) {
         container.open();
@@ -80,13 +143,38 @@ define([
   MultipleSelection.prototype.selectionContainer = function () {
     var $container = $(
       '<li class="select2-selection__choice">' +
-        '<span class="select2-selection__choice__remove" role="presentation" aria-hidden="true">' +
+        '<span class="select2-selection__choice__remove" role="button" tabindex="0">' +
           '&times;' +
         '</span>' +
       '</li>'
     );
 
     return $container;
+  };
+
+  MultipleSelection.prototype._removeChoiceFromKeyboard = function ($remove) {
+    var self = this;
+    var removeIndex = this.$selection
+      .find('.select2-selection__choice__remove')
+      .index($remove);
+
+    $remove.trigger('click');
+
+    window.setTimeout(function () {
+      var $removeChoices = self.$selection.find(
+        '.select2-selection__choice__remove'
+      );
+
+      if ($removeChoices.length > 0) {
+        var focusIndex = Math.min(removeIndex, $removeChoices.length - 1);
+
+        $removeChoices.eq(focusIndex).focus();
+      } else if ('undefined' !== typeof self.$search) {
+        self.focusOnSearch();
+      } else {
+        self.$selection.focus();
+      }
+    }, 1);
   };
 
   /**
@@ -129,6 +217,13 @@ define([
       $selection.text(formatted);
       $selection.prepend(removeItemTag);
       $selection.prop('title', selection.title || selection.text);
+
+      var removeItem = this.options.get('translations').get('removeItem');
+
+      $selection.find('.select2-selection__choice__remove').attr(
+        'aria-label',
+        removeItem(selection)
+      );
 
       $selection.data('data', selection);
 

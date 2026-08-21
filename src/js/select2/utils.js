@@ -261,6 +261,12 @@ define([
     return txt.value;
   }
 
+  Utils.isRemoveChoiceEvent = function (evt) {
+    return $(evt.target).closest(
+      '.select2-selection__choice__remove'
+    ).length > 0;
+  };
+
   // Append an array of jQuery nodes to a given element.
   Utils.appendMany = function ($element, $nodes) {
     // jQuery 1.7.x does not support $.fn.append() with an array
