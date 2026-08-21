@@ -106,9 +106,9 @@ test('dropdown is positioned down with static margins', function (assert) {
     );
 
     assert.equal(
-        $dropdown.css('top').substring(0, 2),
-        $container.outerHeight() + 5,
-        'The offset should be 5px at the top'
+        parseFloat($dropdown.css('top')),
+        $container.offset().top + $container.outerHeight(),
+        'The dropdown should be positioned below the container'
     );
 
     assert.equal(
@@ -164,9 +164,9 @@ test('dropdown is positioned down with absolute offsets', function (assert) {
     );
 
     assert.equal(
-        $dropdown.css('top').substring(0, 2),
-        $container.outerHeight(),
-        'There should not be an extra top offset'
+        parseFloat($dropdown.css('top')),
+        $container.offset().top + $container.outerHeight(),
+        'The dropdown should be positioned below the container'
     );
 
     assert.equal(
