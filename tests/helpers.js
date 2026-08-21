@@ -2,6 +2,10 @@
 var require = $.fn.select2.amd.require;
 var define = $.fn.select2.amd.define;
 
+define('qunit', [], function () {
+  return QUnit;
+});
+
 // Disable jQuery's binding to $
 jQuery.noConflict();
 
