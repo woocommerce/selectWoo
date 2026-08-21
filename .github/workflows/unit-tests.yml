@@ -27,4 +27,4 @@ jobs:
         run: node node_modules/phantomjs-prebuilt/install.js
 
       - name: Run unit tests
-        run: ./node_modules/.bin/grunt test
+        run: ./node_modules/.bin/grunt requirejs concat connect:tests qunit
