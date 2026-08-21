@@ -21,7 +21,10 @@ jobs:
           node-version: '14'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --ignore-scripts
+
+      - name: Install PhantomJS
+        run: node node_modules/phantomjs-prebuilt/install.js
 
       - name: Run unit tests
         run: ./node_modules/.bin/grunt test
