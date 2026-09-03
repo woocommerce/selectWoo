@@ -2,6 +2,53 @@
 var require = $.fn.select2.amd.require;
 var define = $.fn.select2.amd.define;
 
+// This compatibility adapter is a temporary workaround that lets the modern
+// grunt-contrib-qunit runner use the legacy QUnit 1 suite without upgrading
+// QUnit and rewriting the tests as part of this change.
+if (typeof QUnit.on !== 'function') {
+  QUnit.on = function (eventName, callback) {
+    if (eventName === 'testStart') {
+      QUnit.testStart(function (details) {
+        callback({
+          fullName: [details.module, details.name],
+          moduleName: details.module,
+          name: details.name
+        });
+      });
+    } else if (eventName === 'testEnd') {
+      QUnit.testDone(function (details) {
+        var errors = details.assertions.filter(function (assertion) {
+          return !assertion.result;
+        });
+
+        callback({
+          errors: errors,
+          fullName: [details.module, details.name],
+          moduleName: details.module,
+          name: details.name,
+          runtime: details.runtime,
+          status: details.skipped ? 'skipped' :
+            (details.failed ? 'failed' : 'passed')
+        });
+      });
+    } else if (eventName === 'runEnd') {
+      QUnit.done(function (details) {
+        callback({
+          runtime: details.runtime,
+          status: details.failed ? 'failed' : 'passed',
+          testCounts: {
+            failed: details.failed,
+            passed: details.passed,
+            skipped: 0,
+            todo: 0,
+            total: details.total
+          }
+        });
+      });
+    }
+  };
+}
+
 define('qunit', [], function () {
   return QUnit;
 });

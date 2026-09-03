@@ -1,4 +1,28 @@
 module.exports = function (grunt) {
+  var puppeteerOptions = {};
+  var chromePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+
+  // Work around the Chrome version bundled by Puppeteer so the legacy QUnit 1
+  // suite can keep running without requiring a QUnit upgrade in this change.
+  if (!chromePath && process.platform === 'darwin') {
+    chromePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+  }
+
+  if (chromePath) {
+    if (grunt.file.exists(chromePath)) {
+      puppeteerOptions.executablePath = chromePath;
+      grunt.log.writeln(
+        'Using Chrome at ' + chromePath + ' as a workaround for the legacy ' +
+        'QUnit 1 test suite without upgrading QUnit.'
+      );
+    } else {
+      grunt.log.warn(
+        'Chrome was not found at ' + chromePath + '. Falling back to the ' +
+        'browser bundled with Puppeteer.'
+      );
+    }
+  }
+
   // Full list of files that must be included by RequireJS
   includes = [
     'jquery.select2',
@@ -143,7 +167,8 @@ module.exports = function (grunt) {
     qunit: {
       all: {
         options: {
-          urls: testUrls
+          urls: testUrls,
+          puppeteer: puppeteerOptions
         }
       }
     },

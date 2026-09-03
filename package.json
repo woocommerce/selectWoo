@@ -39,6 +39,9 @@
     "dist"
   ],
   "version": "1.0.11",
+  "scripts": {
+    "test": "grunt requirejs concat connect:tests qunit"
+  },
   "jspm": {
     "main": "js/select2",
     "directories": {
