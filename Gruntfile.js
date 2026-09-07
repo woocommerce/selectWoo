@@ -1,4 +1,28 @@
 module.exports = function (grunt) {
+  var puppeteerOptions = {};
+  var chromePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+
+  // Work around the Chrome version bundled by Puppeteer so the legacy QUnit 1
+  // suite can keep running without requiring a QUnit upgrade in this change.
+  if (!chromePath && process.platform === 'darwin') {
+    chromePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+  }
+
+  if (chromePath) {
+    if (grunt.file.exists(chromePath)) {
+      puppeteerOptions.executablePath = chromePath;
+      grunt.log.writeln(
+        'Using Chrome at ' + chromePath + ' as a workaround for the legacy ' +
+        'QUnit 1 test suite without upgrading QUnit.'
+      );
+    } else {
+      grunt.log.warn(
+        'Chrome was not found at ' + chromePath + '. Falling back to the ' +
+        'browser bundled with Puppeteer.'
+      );
+    }
+  }
+
   // Full list of files that must be included by RequireJS
   includes = [
     'jquery.select2',
@@ -35,16 +59,6 @@ module.exports = function (grunt) {
   var testUrls = testFiles.map(function (filePath) {
     return 'http://localhost:9999/' + filePath;
   });
-
-  var testBuildNumber = "unknown";
-
-  if (process.env.TRAVIS_JOB_ID) {
-    testBuildNumber = "travis-" + process.env.TRAVIS_JOB_ID;
-  } else {
-    var currentTime = new Date();
-
-    testBuildNumber = "manual-" + currentTime.getTime();
-  }
 
   for (var i = 0; i < i18nFiles.length; i++) {
     var file = i18nFiles[i];
@@ -153,58 +167,8 @@ module.exports = function (grunt) {
     qunit: {
       all: {
         options: {
-          urls: testUrls
-        }
-      }
-    },
-
-    'saucelabs-qunit': {
-      all: {
-        options: {
-          build: testBuildNumber,
-          tags: ['tests', 'qunit'],
           urls: testUrls,
-          testTimeout: 8000,
-          testname: 'QUnit test for Select2',
-          browsers: [
-            {
-              browserName: 'internet explorer',
-              version: '8',
-              platform: 'Windows 7'
-            },
-            {
-              browserName: 'internet explorer',
-              version: '9',
-              platform: 'Windows 7'
-            },
-            {
-              browserName: 'internet explorer',
-              version: '10',
-              platform: 'Windows 7'
-            },
-
-            {
-              browserName: 'internet explorer',
-              version: '11',
-              platform: 'Windows 10'
-            },
-
-            {
-              browserName: 'firefox',
-              platform: 'linux'
-            },
-
-            {
-              browserName: 'chrome',
-              platform: 'linux'
-            },
-
-            {
-              browserName: 'opera',
-              version: '12',
-              platform: 'linux'
-            }
-          ]
+          puppeteer: puppeteerOptions
         }
       }
     },
@@ -249,7 +213,7 @@ module.exports = function (grunt) {
       }
     },
 
-    sass: {
+    'dart-sass': {
       dist: {
         options: {
           outputStyle: 'compressed'
@@ -267,7 +231,7 @@ module.exports = function (grunt) {
       },
       dev: {
         options: {
-          outputStyle: 'nested'
+          outputStyle: 'expanded'
         },
         files: {
           'dist/css/select2.css': [
@@ -423,31 +387,22 @@ module.exports = function (grunt) {
 
   grunt.loadNpmTasks('grunt-gh-pages');
   grunt.loadNpmTasks('grunt-jekyll');
-  grunt.loadNpmTasks('grunt-saucelabs');
-  grunt.loadNpmTasks('grunt-sass');
+  grunt.loadNpmTasks('grunt-dart-sass');
 
   grunt.registerTask('default', ['compile', 'test', 'minify']);
 
   grunt.registerTask('compile', [
     'requirejs:dist', 'requirejs:dist.woo', 'requirejs:dist.full', 'requirejs:dist.full.woo', 'requirejs:i18n',
     'concat:dist', 'concat:dist.woo', 'concat:dist.full', 'concat:dist.full.woo',
-    'sass:dev'
+    'dart-sass:dev'
   ]);
-  grunt.registerTask('minify', ['uglify', 'sass:dist']);
+  grunt.registerTask('minify', ['uglify', 'dart-sass:dist']);
   grunt.registerTask('test', ['connect:tests', 'qunit', 'jshint']);
 
   var ciTasks = [];
 
   ciTasks.push('compile')
   ciTasks.push('connect:tests');
-
-  /*
-  // grunt-saucelabs appears to be broken with Travis altogether now.
-  // Can't run Sauce Labs tests in pull requests
-  if (process.env.TRAVIS_PULL_REQUEST == 'false') {
-    ciTasks.push('saucelabs-qunit');
-  }
-  */
 
   ciTasks.push('qunit');
   ciTasks.push('jshint');
