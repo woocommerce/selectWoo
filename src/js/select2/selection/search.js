@@ -12,7 +12,8 @@ define([
       '<li class="select2-search select2-search--inline">' +
         '<input class="select2-search__field" type="text" tabindex="-1"' +
         ' autocomplete="off" autocorrect="off" autocapitalize="none"' +
-        ' spellcheck="false" role="textbox" aria-autocomplete="list" />' +
+        ' spellcheck="false" role="textbox" aria-autocomplete="list"' +
+        ' aria-multiline="false" />' +
       '</li>'
     );
 
@@ -33,14 +34,14 @@ define([
     decorated.call(this, container, $container);
 
     container.on('open', function () {
-      self.$search.attr('aria-owns', resultsId);
+      self.$search.attr('aria-controls', resultsId);
       self.$search.trigger('focus');
     });
 
     container.on('close', function () {
       self.$search.val('');
       self.$search.removeAttr('aria-activedescendant');
-      self.$search.removeAttr('aria-owns');
+      self.$search.removeAttr('aria-controls');
       self.$search.trigger('focus');
     });
 
