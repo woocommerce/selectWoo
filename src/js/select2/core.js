@@ -455,6 +455,12 @@ define([
       args = {};
     }
 
+    if ((name === 'select' || name === 'unselect') &&
+        this.$element.is(':disabled')) {
+      args.prevented = true;
+      return;
+    }
+
     if (name in preTriggerMap) {
       var preTriggerName = preTriggerMap[name];
       var preTriggerArgs = {
